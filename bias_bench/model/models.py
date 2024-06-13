@@ -6,6 +6,13 @@ import transformers
 from bias_bench.debias.self_debias.modeling import GPT2Wrapper
 from bias_bench.debias.self_debias.modeling import MaskedLMWrapper
 
+class GemmaForCausalLM:
+    def __new__(self, model_name_or_path):
+        return transformers.GemmaForCausalLM.from_pretrained(model_name_or_path, token='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')
+
+class AutoModelForCausalLM:
+    def __new__(self, model_name_or_path):
+        return transformers.AutoModelForCausalLM.from_pretrained(model_name_or_path, token='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')
 
 class BertModel:
     def __new__(self, model_name_or_path):

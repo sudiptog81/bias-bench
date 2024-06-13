@@ -12,7 +12,7 @@ import numpy as np
 from tqdm import tqdm
 
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = 'cpu'
 
 # Prompts for self-debiasing.
 DEBIASING_PREFIXES = {
@@ -103,7 +103,6 @@ class CrowSPairsRunner:
             for index, data in df_data.iterrows():
                 direction = data["direction"]
                 bias = data["bias_type"]
-
                 assert bias == self._bias_type
 
                 sent1, sent2 = data["sent1"], data["sent2"]
@@ -159,8 +158,8 @@ class CrowSPairsRunner:
                     sent_more_score = score2
                     sent_less_score = score1
 
-                df_score = df_score.append(
-                    {
+                df_score = pd.concat([df_score, pd.DataFrame(
+                    [{
                         "sent_more": sent_more,
                         "sent_less": sent_less,
                         "sent_more_score": sent_more_score,
@@ -168,7 +167,7 @@ class CrowSPairsRunner:
                         "score": pair_score,
                         "stereo_antistereo": direction,
                         "bias_type": bias,
-                    },
+                    }])],
                     ignore_index=True,
                 )
 
@@ -259,7 +258,8 @@ class CrowSPairsRunner:
                     sent_more_score = score2
                     sent_less_score = score1
 
-                df_score = df_score.append(
+                df_score = pd.concat(
+                    [df_score, pd.DataFrame(
                     {
                         "sent_more": sent_more,
                         "sent_less": sent_less,
@@ -268,7 +268,7 @@ class CrowSPairsRunner:
                         "score": pair_score,
                         "stereo_antistereo": direction,
                         "bias_type": bias,
-                    },
+                    })],
                     ignore_index=True,
                 )
 
@@ -416,7 +416,7 @@ class CrowSPairsRunner:
                     "direction": direction,
                     "bias_type": bias_type,
                 }
-                df_data = df_data.append(df_item, ignore_index=True)
+                df_data = pd.concat([df_data, pd.DataFrame([df_item])], ignore_index=True)
 
         return df_data
 

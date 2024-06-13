@@ -22,12 +22,6 @@ parser.add_argument(
     action="store",
     type=str,
     default="BertForMaskedLM",
-    choices=[
-        "BertForMaskedLM",
-        "AlbertForMaskedLM",
-        "RobertaForMaskedLM",
-        "GPT2LMHeadModel",
-    ],
     help="Model to evalute (e.g., BertForMaskedLM). Typically, these correspond to a HuggingFace "
     "class.",
 )
@@ -36,7 +30,6 @@ parser.add_argument(
     action="store",
     type=str,
     default="bert-base-uncased",
-    choices=["bert-base-uncased", "albert-base-v2", "roberta-base", "gpt2"],
     help="HuggingFace model name or path (e.g., bert-base-uncased). Checkpoint from which a "
     "model is instantiated.",
 )
@@ -44,7 +37,6 @@ parser.add_argument(
     "--bias_type",
     action="store",
     default=None,
-    choices=["gender", "race", "religion"],
     help="Determines which CrowS-Pairs dataset split to evaluate against.",
 )
 
@@ -69,11 +61,12 @@ if __name__ == "__main__":
     model = getattr(models, args.model)(args.model_name_or_path)
     model.eval()
     tokenizer = transformers.AutoTokenizer.from_pretrained(args.model_name_or_path)
-
+    tokenizer.mask_token = "<mask>"
+    tokenizer.mask_token_id = tokenizer.convert_tokens_to_ids(tokenizer.mask_token)
     runner = CrowSPairsRunner(
         model=model,
         tokenizer=tokenizer,
-        input_file=f"{args.persistent_dir}/data/crows/crows_pairs_anonymized.csv",
+        input_file=f"indibias_eng.csv",
         bias_type=args.bias_type,
         is_generative=_is_generative(args.model),  # Affects model scoring.
     )
